@@ -1,0 +1,333 @@
+
+第二代模版已经开源到 https://github.com/JessYanCoding/MVPArmsTemplate ,一键生成所有文件
+
+
+Name: ArtActivity
+--------------------------------------------------------------------------------------
+
+#if (${PACKAGE_NAME} && ${PACKAGE_NAME} != "")package ${PACKAGE_NAME};#end
+
+import android.os.Bundle;
+import com.krspace.krbase.base.App;
+import com.krspace.krbase.base.BaseActivity;
+import com.krspace.krbase.mvp.IView;
+import com.krspace.krbase.mvp.Message;
+import com.krspace.krbase.utils.BaseUtils;
+
+#parse("File Header.java")
+
+public class ${NAME}Activity extends BaseActivity<${NAME}Presenter> implements IView {
+
+
+
+    @Override
+    public int initView(Bundle savedInstanceState) {
+        return 0;
+    }
+
+    @Override
+    public void initData(Bundle savedInstanceState) {
+
+    }
+
+    @Override
+    public ${NAME}Presenter obtainPresenter() {
+        return new ${NAME}Presenter(BaseUtils.obtainAppComponentFromContext(this));
+    }
+
+
+    @Override
+    public void showLoading() {
+
+    }
+
+    @Override
+    public void hideLoading() {
+
+    }
+
+    @Override
+    public void showMessage(String message) {
+        BaseUtils.snackbarText(message);
+    }
+
+    @Override
+    public void handleMessage(Message message) {
+        switch (message.what) {
+            case 0:
+                break;
+            case 1:
+                break;
+        }
+    }
+
+}
+
+--------------------------------------------------------------------------------------
+
+
+
+
+Name: ArtModel
+--------------------------------------------------------------------------------------
+
+#if (${PACKAGE_NAME} && ${PACKAGE_NAME} != "")package ${PACKAGE_NAME};#end
+
+
+import com.krspace.krbase.mvp.IModel;
+import com.krspace.krbase.mvp.IRepositoryManager;
+
+/**
+ * 必须实现 IModel
+ * 可以根据不同的业务逻辑划分多个 Repository 类,多个业务逻辑相近的页面可以使用同一个 Repository 类
+ * 无需每个页面都创建一个独立的 Repository
+ * 通过 {@link com.krspace.krbase.mvp.IRepositoryManager#createRepository(java.lang.Class)} 获得的 Repository 实例,为单例对象
+ */
+
+#parse("File Header.java")
+
+public class ${NAME}Repository implements IModel {
+
+    private IRepositoryManager mManager;
+
+    /**
+     * 必须含有一个接收IRepositoryManager接口的构造函数,否则会报错
+     * @param manager
+     */
+    public ${NAME}Repository(IRepositoryManager manager) {
+        this.mManager = manager;
+    }
+
+
+
+    @Override
+    public void onDestroy() {
+
+    }
+}
+
+
+--------------------------------------------------------------------------------------
+
+
+
+
+Name: ArtPresenter
+--------------------------------------------------------------------------------------
+
+#if (${PACKAGE_NAME} && ${PACKAGE_NAME} != "")package ${PACKAGE_NAME};#end
+
+
+import com.krspace.krbase.di.component.AppComponent;
+import com.krspace.krbase.mvp.BasePresenter;
+import me.jessyan.rxerrorhandler.core.RxErrorHandler;
+
+
+#parse("File Header.java")
+
+public class ${NAME}Presenter extends BasePresenter<YoureRepository> {
+    private RxErrorHandler mErrorHandler;
+
+
+    public ${NAME}Presenter(AppComponent appComponent) {
+        super(appComponent.repositoryManager().createRepository(YoureRepository.class));
+        this.mErrorHandler = appComponent.rxErrorHandler();
+    }
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        this.mErrorHandler = null;
+    }
+}
+
+
+--------------------------------------------------------------------------------------
+
+Name: ArtFragment
+--------------------------------------------------------------------------------------
+
+#if (${PACKAGE_NAME} && ${PACKAGE_NAME} != "")package ${PACKAGE_NAME};#end
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.krspace.krbase.base.App;
+import com.krspace.krbase.base.BaseFragment;
+import com.krspace.krbase.mvp.IView;
+import com.krspace.krbase.mvp.Message;
+import com.krspace.krbase.utils.BaseUtils;
+
+#parse("File Header.java")
+
+public class ${NAME}Fragment extends BaseFragment<${NAME}Presenter> implements IView{
+
+
+    public static ${NAME}Fragment newInstance() {
+        ${NAME}Fragment fragment = new ${NAME}Fragment();
+        return fragment;
+    }
+
+    @Override
+    public View initView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(layout_id, container, false);
+    }
+
+    @Override
+    public void initData(Bundle savedInstanceState) {
+
+    }
+
+    @Override
+    public ${NAME}Presenter obtainPresenter() {
+        return new ${NAME}Presenter(BaseUtils.obtainAppComponentFromContext(getActivity()));
+    }
+
+    /**
+     * 此方法是让外部调用使fragment做一些操作的,比如说外部的activity想让fragment对象执行一些方法,
+     * 建议在有多个需要让外界调用的方法时,统一传Message,通过what字段,来区分不同的方法,在setData
+     * 方法中就可以switch做不同的操作,这样就可以用统一的入口方法做不同的事
+     *
+     * 使用此方法时请注意调用时fragment的生命周期,如果调用此setData方法时onCreate还没执行
+     * setData里却调用了presenter的方法时,是会报空的,因为presenter是在onCreate方法中创建的
+     * 如果要做一些初始化操作,可以不必让外部调setData,在initData中初始化就可以了
+     *
+     * @param data
+     */
+
+    @Override
+    public void setData(Object data) {
+
+    }
+
+
+    @Override
+    public void showLoading() {
+
+    }
+
+    @Override
+    public void hideLoading() {
+
+    }
+
+    @Override
+    public void showMessage(String message) {
+        BaseUtils.snackbarText(message);
+    }
+
+
+    @Override
+    public void handleMessage(Message message) {
+        switch (message.what) {
+            case 0:
+                break;
+            case 1:
+                break;
+        }
+    }
+
+}
+
+--------------------------------------------------------------------------------------
+
+
+
+
+
+Name: AutoView
+--------------------------------------------------------------------------------------
+#if (${PACKAGE_NAME} && ${PACKAGE_NAME} != "")package ${PACKAGE_NAME};#end
+
+import android.content.Context;
+import android.support.annotation.Nullable;
+import android.util.AttributeSet;
+import android.view.ViewGroup;
+
+import com.zhy.autolayout.AutoLayoutInfo;
+import com.zhy.autolayout.utils.AutoLayoutHelper;
+
+/**
+ * 此Template用于生成AutoLayout需要的的Auto系列View,如需要使ScrollView适配,使用此Template输入ScrollView,即可生成
+ * AutoScrollView,使用此View即可自适应
+ * Created by jess on 16/4/14.
+ */
+public class Auto${NAME} extends ${NAME} {
+    private AutoLayoutHelper mHelper = new AutoLayoutHelper(this);
+
+    public Auto${NAME}(Context context) {
+        super(context);
+    }
+
+    public Auto${NAME}(Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    public Auto${NAME}(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
+    {
+        if (!isInEditMode())
+            mHelper.adjustChildren();
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
+
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b)
+    {
+        super.onLayout(changed, l, t, r, b);
+    }
+
+
+    @Override
+    public LayoutParams generateLayoutParams(AttributeSet attrs) {
+        return new LayoutParams(getContext(), attrs);
+    }
+
+
+    public static class LayoutParams extends ${NAME}.LayoutParams
+            implements AutoLayoutHelper.AutoLayoutParams
+    {
+        private AutoLayoutInfo mAutoLayoutInfo;
+
+        public LayoutParams(Context c, AttributeSet attrs)
+        {
+            super(c, attrs);
+            mAutoLayoutInfo = AutoLayoutHelper.getAutoLayoutInfo(c, attrs);
+        }
+
+        @Override
+        public AutoLayoutInfo getAutoLayoutInfo()
+        {
+            return mAutoLayoutInfo;
+        }
+
+
+        public LayoutParams(int width, int height)
+        {
+            super(width, height);
+        }
+
+
+        public LayoutParams(ViewGroup.LayoutParams source)
+        {
+            super(source);
+        }
+
+        public LayoutParams(MarginLayoutParams source)
+        {
+            super(source);
+        }
+
+    }
+}
+
+--------------------------------------------------------------------------------------
+
