@@ -29,6 +29,7 @@
        AutoSize 的详细介绍请看这里 https://juejin.im/post/5bce688e6fb9a05cf715d1c2
       再次修改！
       dev分支新增加了功能
+      修复了一个小问题~
        -->
         <meta-data
             android:name="design_width_in_dp"
